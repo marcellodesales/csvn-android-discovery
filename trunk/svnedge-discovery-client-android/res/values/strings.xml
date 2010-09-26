@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">SvnEdge Servers Discovery</string>
+    <string name="app_name">CollabNet SvnEdge Servers Discovery</string>
+    <string name="main_no_items">No servers to display</string>
+    
+    <string name="wizard_title1">Welcome to the CollabNet Subversion Edge Discovery Client!</string>
+    <string name="wizard_title2">It helps you find CollabNet Subversion Edge servers running on either the Standalone or Managed mode in the local  network.</string>
+    <string name="wizard_eula">Before we get started, we need to get some legal information out of the way. The CollabNet SvnEdge Discovery API is an open-source library published under the GPLv3 license.\n\nThere is no official support from CollabNet, so use it at your own responsibility and WITHOUT ANY WARRANTY.</string>
+
+    <string name="wizard_pos">Agree</string>
+    <string name="wizard_neg">Close</string>
+</resources>

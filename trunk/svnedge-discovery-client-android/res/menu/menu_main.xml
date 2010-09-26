@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_item_discover"
+          android:icon="@drawable/magnet"
+          android:alphabeticShortcut="d"
+          android:title="Discover" />
+
+    <item android:id="@+id/menu_item_wifi_settings"
+          android:icon="@drawable/flash"
+          android:alphabeticShortcut="w"
+          android:title="Wifi Settings" />
+
+    <item android:id="@+id/menu_item_filters"
+          android:icon="@drawable/filter"
+          android:alphabeticShortcut="f"
+          android:title="Filters" />
+
+    <item android:id="@+id/menu_item_settings"
+          android:icon="@drawable/settings"
+          android:alphabeticShortcut="s"
+          android:title="Settings" />
+
+    <item android:id="@+id/menu_item_about"
+          android:icon="@drawable/business"
+          android:alphabeticShortcut="a"
+          android:title="About" />
+
+    <item android:id="@+id/menu_item_exit"
+          android:icon="@drawable/exit"
+          android:alphabeticShortcut="e"
+          android:title="Exit" />
+
+</menu>

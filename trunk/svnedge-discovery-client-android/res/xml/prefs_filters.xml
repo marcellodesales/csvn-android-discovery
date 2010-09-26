@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Filter Servers by Mode">
+
+        <CheckBoxPreference
+            android:key="prefFilterByStandAloneMode"
+            android:title="Standalone Mode"
+            android:defaultValue="true"
+            android:summary="Discover only servers in Standalone Mode" />
+
+        <CheckBoxPreference
+            android:key="prefFilterByManagedMode"
+            android:title="Managed Mode"
+            android:defaultValue="true"
+            android:summary="Discover only servers in TeamForge Mode" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Filter Servers by URL">
+
+        <EditTextPreference
+            android:key="prefTextHostname"
+            android:name="Server Hostname"
+            android:summary="The part of the hostname of an SvnEdge Console"
+            android:defaultValue="localhost"
+            android:title="Server Hostname" />
+
+        <EditTextPreference
+            android:key="prefTextIpAddress"
+            android:name="Server/Network Ip Address"
+            android:summary="The IP address of an SvnEdge Console or network"
+            android:defaultValue="127.0.0.1"
+            android:title="Server/Network Ip Address" />
+
+        <EditTextPreference
+            android:key="prefTextPort"
+            android:name="Server Port"
+            android:summary="The port number of an SvnEdge Console"
+            android:defaultValue="3343"
+            android:title="Server Port Number" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Found Servers">
+
+        <CheckBoxPreference
+            android:key="prefCheckBoxCacheResults"
+            android:title="Remember found servers"
+            android:defaultValue="true"
+            android:summary="Caches the list of the servers found during execution" />
+
+        <CheckBoxPreference
+            android:key="prefCheckBoxSaveGeoLoc"
+            android:title="Save Geolocation"
+            android:defaultValue="false"
+            android:summary="Save the geolocation of the server found" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Miscellaneous">
+
+        <CheckBoxPreference
+            android:key="prefCheckBoxShowEula"
+            android:title="Show EULA screen on start-up"
+            android:defaultValue="true"
+            android:summary="Displays the EULA screen at startup" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
