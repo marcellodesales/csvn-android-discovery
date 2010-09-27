@@ -3,6 +3,8 @@ package com.collabnet.svnedge.discovery.client.android.discover;
 import static com.collabnet.svnedge.discovery.client.android.discover.DiscoverActivity.TAG;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.collabnet.svnedge.discovery.SvnEdgeServerInfo;
+import com.collabnet.svnedge.discovery.client.android.R;
+import com.collabnet.svnedge.discovery.mdns.SvnEdgeCsvnServiceKey;
 
 public class SvnEdgeServersListLongClickListener implements OnItemLongClickListener {
 
@@ -31,24 +35,21 @@ public class SvnEdgeServersListLongClickListener implements OnItemLongClickListe
 
         Log.d(TAG, "Clicked on item at position " + pos);
         final SvnEdgeServerInfo selectedServer = this.csvnServersFound.get(pos);
+        String tfPath = selectedServer.getPropertyValue(SvnEdgeCsvnServiceKey.TEAMFORGE_PATH);
+        boolean serverConverted = tfPath.equals("");
 
-//            final CharSequence[] items = {"Open SvnEdge URL...", "Email SvnEdge Admin..."};
-        final CharSequence[] items = {"Open console URL...", "Open ViewVC"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this.mainActivity);
-        builder.setTitle("SvnEdge Server: " + selectedServer.getHostAddress());
+        builder.setTitle("Subversion Server: " + selectedServer.getHostAddress());
+        if (serverConverted) {
+            builder.setIcon(R.drawable.icon_teamforge);
+        } else {
+            builder.setIcon(R.drawable.icon_collabnet);
+        }
         Log.d(TAG, "Will shot the options");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int pos) {
-//                    if (pos == 0) {
-                // open the browser with the URL from the server.
-                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                        selectedServer.getUrl().toString()));
-                mainActivity.startActivity(myIntent);
-//                    } else {
-//                        sendEmailToCsvnServerAdmin(selectedServer);
-//                    }
-            }
-        });
+
+        ServerOptionsAdapter ad = new ServerOptionsAdapter(mainActivity, serverConverted);
+        builder.setAdapter(ad, new ServerOptions(selectedServer));
+
         AlertDialog alert = builder.create();
         alert.show();
 
@@ -58,31 +59,68 @@ public class SvnEdgeServersListLongClickListener implements OnItemLongClickListe
         return false;
     }
 
-    private void sendEmailToCsvnServerAdmin(SvnEdgeServerInfo csvnServer) {
+    private class ServerOptions implements DialogInterface.OnClickListener {
+
+        private SvnEdgeServerInfo selectedServer;
+
+        public ServerOptions(SvnEdgeServerInfo server) {
+            this.selectedServer = server;
+        }
+
+        private String getTeamForgeWizardAction() {
+            return this.selectedServer.getPropertyValue(SvnEdgeCsvnServiceKey.TEAMFORGE_PATH);
+        }
+
+        private boolean isServerConverted() {
+            return this.getTeamForgeWizardAction().equals("");
+        }
+
+        public void onClick(DialogInterface dialog, int pos) {
+            String url = selectedServer.getUrl().toString();
+            if (pos == ServerOptionsAdapter.ITEM_OPEN_URL) {
+                // open the browser with the URL from the server.
+                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                mainActivity.startActivity(myIntent);
+
+            } else if (pos == ServerOptionsAdapter.ITEM_OPEN_VIEWVC) {
+                // open the browser with the viewVC URL.
+                Pattern p = Pattern.compile(":([0-9]+)/");
+                Matcher m = p.matcher(url);
+                if (m.find()) {
+                    String consolePort = m.group(1);
+                    String viewVcPort = "18080";
+                    url = url.replace(consolePort, viewVcPort);
+                }
+                url = url.replace("csvn", "viewvc");
+                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                mainActivity.startActivity(myIntent);
+
+            } else if (pos == ServerOptionsAdapter.ITEM_EMAIL_INFO) {
+                sendEmailToCsvnServerAdmin(url);
+
+            } else if (pos == ServerOptionsAdapter.ITEM_INTEGRATION && !this.isServerConverted()) {
+                String conversion = url + this.getTeamForgeWizardAction();
+                // open the browser with the URL from the server.
+                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(conversion));
+                mainActivity.startActivity(myIntent);
+            }
+        }
+    }
+
+    private void sendEmailToCsvnServerAdmin(String url) {
 
         final Intent emailIntent =
                 new Intent(android.content.Intent.ACTION_SEND);
 
         emailIntent.setType("plain/text");
 
-//        String adminName = csvnServer.getPropertyValue(
-//                SvnEdgeCsvnServiceKey.ADMIN_NAME);
-//        String adminEmail =  adminName + "<" + csvnServer.getPropertyValue(
-//                SvnEdgeCsvnServiceKey.ADMIN_EMAIL) + ">";
-        String adminName = null;
-        String adminEmail =  null;
-        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-                new String[] { adminEmail });
-        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                "Regarding the SvnEdge Server on " + 
-                csvnServer.getUrl().toString());
-        emailIntent
-                .putExtra(android.content.Intent.EXTRA_TEXT,
-                        "Hi " + adminName + ",\n\n " +
-                        "I found a CollabNet Subversion Edge server running " +
-                        "at '" + csvnServer.getUrl() + "', which is under " +
-                        "your administration, using the CollabNet Android " +
-                        "Discovery Client. \n\nThanks, Marcello de Sales.");
+        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[] { "" });
+        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, 
+                "Found SvnEdge Server running on " + url);
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                "I found a CollabNet Subversion Edge server running " +
+                "at '" + url + "', using the CollabNet " +
+                "Discovery - Android Client.");
 
         this.mainActivity.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }

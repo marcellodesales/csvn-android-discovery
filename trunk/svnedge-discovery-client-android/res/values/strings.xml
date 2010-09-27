@@ -10,4 +10,13 @@
 
     <string name="wizard_pos">Agree</string>
     <string name="wizard_neg">Close</string>
+    
+    <string name="server_option_open_url">Open Web Console</string>
+    <string name="server_option_open_viewvc">Open ViewVC</string>
+    <string name="server_option_email_info">Email Information</string>
+    <string name="server_option_teamforge">Integrate with TeamForge</string>
+
+    <string name="email_info_server_found">Found SvnEdge Server running on</string>
+    <string name="email_info_email_body">I found a CollabNet Subversion Edge server running</string>
+    <string name="email_info_email_body2">using the CollabNet Discovery - Android Client.</string>
 </resources>

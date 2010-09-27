@@ -29,9 +29,6 @@ import com.collabnet.svnedge.discovery.SvnEdgeBonjourClient;
 import com.collabnet.svnedge.discovery.SvnEdgeServerInfo;
 import com.collabnet.svnedge.discovery.SvnEdgeServersListener;
 import com.collabnet.svnedge.discovery.client.android.R;
-import com.collabnet.svnedge.discovery.client.android.R.id;
-import com.collabnet.svnedge.discovery.client.android.R.layout;
-import com.collabnet.svnedge.discovery.client.android.R.menu;
 import com.collabnet.svnedge.discovery.client.android.preference.FiltersPreferenceActivity;
 import com.collabnet.svnedge.discovery.client.android.preference.SettingsPreferenceActivity;
 import com.collabnet.svnedge.discovery.client.util.CloseActivityAction;
@@ -41,7 +38,7 @@ public class DiscoverActivity extends Activity implements
         SvnEdgeServersListener { //, OnItemSelectedListener {
 
     private ArrayList<SvnEdgeServerInfo> csvnServersFound;
-    private SvnEdgeServerInfoAdapter csvnServersFoundAdapter;
+    private SvnEdgeServerInfoListAdapter csvnServersFoundAdapter;
 
     private SvnEdgeBonjourClient csvnClient;
 
@@ -237,7 +234,7 @@ public class DiscoverActivity extends Activity implements
         initUiComponents();
 
         this.csvnServersFoundAdapter =
-                new SvnEdgeServerInfoAdapter(this, R.layout.row_svn_mode_standalone,
+                new SvnEdgeServerInfoListAdapter(this, R.layout.row_svn_mode_standalone,
                         this.csvnServersFound, this);
 
         ListView svnEdgeServersList =

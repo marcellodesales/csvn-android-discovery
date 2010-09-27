@@ -15,16 +15,14 @@ import android.widget.TextView;
 
 import com.collabnet.svnedge.discovery.SvnEdgeServerInfo;
 import com.collabnet.svnedge.discovery.client.android.R;
-import com.collabnet.svnedge.discovery.client.android.R.id;
-import com.collabnet.svnedge.discovery.client.android.R.layout;
 import com.collabnet.svnedge.discovery.mdns.SvnEdgeCsvnServiceKey;
 
-public class SvnEdgeServerInfoAdapter extends ArrayAdapter<SvnEdgeServerInfo> {
+public class SvnEdgeServerInfoListAdapter extends ArrayAdapter<SvnEdgeServerInfo> {
 
     private Activity mainActivity;
     private ArrayList<SvnEdgeServerInfo> serversFound;
 
-    public SvnEdgeServerInfoAdapter(Context context,
+    public SvnEdgeServerInfoListAdapter(Context context,
             int textViewResourceId, ArrayList<SvnEdgeServerInfo> items, Activity parent) {
         super(context, textViewResourceId, items);
         Log.d(TAG, "Initializing the adapter with " + items.size() + " servers") ;
@@ -52,11 +50,6 @@ public class SvnEdgeServerInfoAdapter extends ArrayAdapter<SvnEdgeServerInfo> {
             }
             if (bt != null) {
                 bt.setText("URL: " + serverInfo.getUrl().toString());
-//                bt.setText("Contact: " +
-//                           o.getPropertyValue(SvnEdgeCsvnServiceKey.ADMIN_NAME) +
-//                           " <" +
-//                           o.getPropertyValue(SvnEdgeCsvnServiceKey.ADMIN_EMAIL) +
-//                           ">");
             }
         }
         return v;
