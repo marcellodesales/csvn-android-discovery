@@ -3,7 +3,9 @@ package com.collabnet.svnedge.discovery.client.android.discover;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +25,6 @@ import com.collabnet.svnedge.discovery.client.android.R;
 import com.collabnet.svnedge.discovery.client.android.SvnEdgeDiscoveryApplication;
 import com.collabnet.svnedge.discovery.client.android.preference.FiltersPreferenceActivity;
 import com.collabnet.svnedge.discovery.client.android.preference.SettingsPreferenceActivity;
-import com.collabnet.svnedge.discovery.client.util.CloseActivityAction;
 import com.collabnet.svnedge.discovery.mdns.SvnEdgeServiceType;
 
 public class DiscoverActivity extends Activity {
@@ -66,7 +67,7 @@ public class DiscoverActivity extends Activity {
         ArrayList<SvnEdgeServerInfo> foundServers = (ArrayList<SvnEdgeServerInfo>)getLastNonConfigurationInstance();
         foundServers = foundServers != null ? foundServers: this.app.getFoundServers();
 
-        setContentView(R.layout.main);
+        setContentView(R.layout.discovery);
 
         this.app.initWifiNetworkConnectivity();
         this.initUiComponents(foundServers);
@@ -254,8 +255,22 @@ public class DiscoverActivity extends Activity {
 
         case R.id.menu_item_exit:
             Log.d(TAG, "Opening the closing option");
-            String msg = "Are you sure you want to close the CollabNet SvnEdge Discovery client?";
-            CloseActivityAction.confirm(DiscoverActivity.this, msg, "Yes", "Cancel");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure you want to close the CollabNet SvnEdge Discovery client?")
+                   .setCancelable(false)
+                   .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int id) {
+                            DiscoverActivity.this.finish();
+                            DiscoverActivity.this.app.stopDiscovery();
+                       }
+                   })
+                   .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                       }
+                   });
+            AlertDialog alert = builder.create();
+            alert.show();
             break;
         }
 

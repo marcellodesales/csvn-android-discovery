@@ -20,6 +20,12 @@
     <PreferenceCategory android:title="Miscellaneous">
 
         <CheckBoxPreference
+            android:key="prefVibrateOnStartDiscovery"
+            android:title="Start Discovery Vibration"
+            android:defaultValue="true"
+            android:summary="Vibrate when the discovery starts" />
+
+        <CheckBoxPreference
             android:key="prefCheckBoxShowEula"
             android:title="Show EULA screen on start-up"
             android:defaultValue="true"

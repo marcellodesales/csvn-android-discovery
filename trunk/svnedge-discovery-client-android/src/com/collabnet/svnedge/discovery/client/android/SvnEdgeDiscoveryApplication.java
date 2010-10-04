@@ -7,13 +7,19 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
 import android.os.Bundle;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -24,6 +30,12 @@ import com.collabnet.svnedge.discovery.client.android.discover.DiscoverActivity;
 import com.collabnet.svnedge.discovery.mdns.SvnEdgeCsvnServiceKey;
 import com.collabnet.svnedge.discovery.mdns.SvnEdgeServiceType;
 
+/**
+ * This is the main application implementation.
+ * 
+ * @author Marcello de Sales (mdesales@collab.net)
+ *
+ */
 public class SvnEdgeDiscoveryApplication extends Application implements 
         SvnEdgeServersListener {
 
@@ -54,12 +66,18 @@ public class SvnEdgeDiscoveryApplication extends Application implements
      */
     private MulticastLock multicastLock;
 
+    public NotificationManager notificationManager;
+    private Notification notification;
+    private int clientNotificationCount = 0;
+
+    // Intents
+    private PendingIntent mainIntent;
+
     /**
      * Builds a new application.
      */
     public SvnEdgeDiscoveryApplication() {
         this.csvnServersFound = new ArrayList<SvnEdgeServerInfo>();
-
     }
 
     /**
@@ -67,6 +85,25 @@ public class SvnEdgeDiscoveryApplication extends Application implements
      */
     public synchronized ArrayList<SvnEdgeServerInfo> getFoundServers() {
         return this.csvnServersFound;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // init notificationManager
+        this.notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        this.notification = new Notification(R.drawable.discovery_api, "SVNEdge Discovery", System.currentTimeMillis());
+        this.mainIntent = PendingIntent.getActivity(this, 0, new Intent(this, StartUpEulaActivity.class), 0);
+    }
+
+    @Override
+    public void onTerminate() {
+        Log.d(TAG, "Calling onTerminate()");
+        // Remove all notifications
+        this.notificationManager.cancelAll();
+
+        this.stopDiscovery();
+        super.onTerminate();
     }
 
     @Override
@@ -203,6 +240,20 @@ public class SvnEdgeDiscoveryApplication extends Application implements
     }
 
     /**
+     * Show the start notification when the discovery is enabled.
+     */
+    private void showStartNotification() {
+        this.notification.flags = Notification.FLAG_ONGOING_EVENT;
+        this.notification.setLatestEventInfo(this, "CollabNet SVNEdge Discovery", 
+                "The discovery client is running...", this.mainIntent);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if (prefs.getBoolean("prefVibrateOnStartDiscovery", true)) {
+            this.notification.vibrate = new long[] {100, 200, 100, 200};
+        }
+        this.notificationManager.notify(-1, this.notification);
+    }
+
+    /**
      * Starts the discovery API for a given listener.
      * @param listener is the listener interested in the events about 
      * Subversion Edge servers.
@@ -219,6 +270,8 @@ public class SvnEdgeDiscoveryApplication extends Application implements
             this.csvnClient.addServersListener(this);
             Log.d(TAG, "Started the discovery client");
 
+            showStartNotification();
+
         } catch (IOException e) {
             Log.e(TAG, "Did not initilize discovery client", e);
         }
@@ -228,16 +281,12 @@ public class SvnEdgeDiscoveryApplication extends Application implements
      * Stops the discovery service and releases the services.
      */
     public void stopDiscovery() {
+        // remove all the notifications in the status bar.
+        this.notificationManager.cancelAll();
+        // stop the discovery client
         this.csvnClient.stop();
-
+        // release the multicast lock in the kernel.
         this.multicastLock.release();
-        this.csvnClient = null;
-    }
-
-    @Override
-    public void onTerminate() {
-        this.stopDiscovery();
-        super.onTerminate();
     }
 
 }
