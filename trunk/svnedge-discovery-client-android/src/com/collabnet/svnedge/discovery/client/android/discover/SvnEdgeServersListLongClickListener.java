@@ -24,7 +24,8 @@ public class SvnEdgeServersListLongClickListener implements OnItemLongClickListe
 
     private ArrayList<SvnEdgeServerInfo> csvnServersFound;
     private Activity mainActivity;
-    
+    private AlertDialog alert;
+
     public SvnEdgeServersListLongClickListener(Activity main, ArrayList<SvnEdgeServerInfo> serversFound) {
         this.mainActivity = main;
         this.csvnServersFound = serversFound;
@@ -43,7 +44,7 @@ public class SvnEdgeServersListLongClickListener implements OnItemLongClickListe
         if (serverConverted) {
             builder.setIcon(R.drawable.icon_teamforge);
         } else {
-            builder.setIcon(R.drawable.icon_collabnet);
+            builder.setIcon(R.drawable.subversion);
         }
         Log.d(TAG, "Will shot the options");
 
@@ -52,11 +53,16 @@ public class SvnEdgeServersListLongClickListener implements OnItemLongClickListe
 
         AlertDialog alert = builder.create();
         alert.show();
+        this.alert = alert;
 
         Log.d(TAG, "Opening the " + selectedServer.getUrl() + 
                 " in the browser...");
-
+        
         return false;
+    }
+
+    public AlertDialog getAlert() {
+        return this.alert;
     }
 
     private class ServerOptions implements DialogInterface.OnClickListener {
