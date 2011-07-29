@@ -77,39 +77,58 @@ public class SvnEdgeServersListLongClickListener implements OnItemLongClickListe
             return this.selectedServer.getPropertyValue(SvnEdgeCsvnServiceKey.TEAMFORGE_PATH);
         }
 
-        private boolean isServerConverted() {
-            return this.getTeamForgeWizardAction().equals("");
-        }
-
         public void onClick(DialogInterface dialog, int pos) {
             String url = selectedServer.getUrl().toString();
-            if (pos == ServerOptionsAdapter.ITEM_OPEN_URL) {
-                // open the browser with the URL from the server.
-                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mainActivity.startActivity(myIntent);
+            if (!selectedServer.isManagedByTeamForge()) {
+                if (pos == ServerOptionsAdapter.ITEM_INTEGRATION) {
+                    openIntegrationURL(url);
 
-            } else if (pos == ServerOptionsAdapter.ITEM_OPEN_VIEWVC) {
-                // open the browser with the viewVC URL.
-                Pattern p = Pattern.compile(":([0-9]+)/");
-                Matcher m = p.matcher(url);
-                if (m.find()) {
-                    String consolePort = m.group(1);
-                    String viewVcPort = "18080";
-                    url = url.replace(consolePort, viewVcPort);
+                } else if (pos == ServerOptionsAdapter.ITEM_OPEN_URL) {
+                    openServerURL(url);
+
+                } else if (pos == ServerOptionsAdapter.ITEM_OPEN_VIEWVC) {
+                    openViewVcURL(url);
+
+                } else if (pos == ServerOptionsAdapter.ITEM_EMAIL_INFO) {
+                    sendEmailToCsvnServerAdmin(url);
                 }
-                url = url.replace("csvn", "viewvc");
-                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mainActivity.startActivity(myIntent);
 
-            } else if (pos == ServerOptionsAdapter.ITEM_EMAIL_INFO) {
-                sendEmailToCsvnServerAdmin(url);
+            } else { // server converted
+                if (pos == ServerOptionsAdapter.ITEM_INTEGRATION) {
+                        openIntegrationURL(url);
 
-            } else if (pos == ServerOptionsAdapter.ITEM_INTEGRATION && !this.isServerConverted()) {
-                String conversion = url + this.getTeamForgeWizardAction();
-                // open the browser with the URL from the server.
-                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(conversion));
-                mainActivity.startActivity(myIntent);
+                } else if (pos == ServerOptionsAdapter.ITEM_OPEN_URL) {
+                    openViewVcURL(url);
+
+                } else if (pos == ServerOptionsAdapter.ITEM_OPEN_VIEWVC) {
+                    sendEmailToCsvnServerAdmin(url);
+                }
             }
+        }
+
+        private void openServerURL(String url) {
+            // open the browser with the URL from the server.
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            mainActivity.startActivity(myIntent);
+        }
+
+        private void openViewVcURL(String url) {
+            // open the browser with the viewVC URL.
+            Pattern p = Pattern.compile(":([0-9]+)/");
+            Matcher m = p.matcher(url);
+            if (m.find()) {
+                String consolePort = m.group(1);
+                String viewVcPort = "18080";
+                url = url.replace(consolePort, viewVcPort);
+            }
+            int index = url.lastIndexOf("/");
+            url = url.substring(0, index) + "/viewvc";
+            openServerURL(url);
+        }
+
+        private void openIntegrationURL(String url) {
+            String conversion = url + this.getTeamForgeWizardAction();
+            openServerURL(conversion);
         }
     }
 
