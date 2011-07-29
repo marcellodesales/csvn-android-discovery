@@ -17,6 +17,28 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Notifications">
+
+        <CheckBoxPreference
+            android:key="prefVibrateOnStartDiscovery"
+            android:title="Service Start-up Vibration "
+            android:defaultValue="true"
+            android:summary="Vibrate when the discovery service starts" />
+
+        <CheckBoxPreference
+            android:key="prefVibrateOnServerStarted"
+            android:title="Server Found Vibration Event"
+            android:defaultValue="true"
+            android:summary="Vibrate when an SvnEdge server is found running" />
+            
+        <CheckBoxPreference
+            android:key="prefVibrateOnServerStopped"
+            android:title="Server Stopped Vibration Event"
+            android:defaultValue="true"
+            android:summary="Vibrate when an SvnEdge server stops running" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Miscellaneous">
 
         <CheckBoxPreference

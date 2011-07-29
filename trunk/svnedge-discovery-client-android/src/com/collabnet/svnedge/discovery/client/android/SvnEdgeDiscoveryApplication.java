@@ -34,10 +34,9 @@ import com.collabnet.svnedge.discovery.mdns.SvnEdgeServiceType;
  * This is the main application implementation.
  * 
  * @author Marcello de Sales (mdesales@collab.net)
- *
+ * 
  */
-public class SvnEdgeDiscoveryApplication extends Application implements 
-        SvnEdgeServersListener {
+public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeServersListener {
 
     /** Called when the activity is first created. */
     public static final String TAG = "SvnEdgeDiscovery";
@@ -65,9 +64,17 @@ public class SvnEdgeDiscoveryApplication extends Application implements
      * To allow the app receive multicast network packets.
      */
     private MulticastLock multicastLock;
-
+    /**
+     * The notification manager reference.
+     */
     public NotificationManager notificationManager;
+    /**
+     * The current notification.
+     */
     private Notification notification;
+    /**
+     * The ID for the notifications.
+     */
     private int clientNotificationCount = 0;
 
     // Intents
@@ -111,8 +118,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements
         Log.d(TAG, "Found server running: " + runningServer);
         synchronized (this.csvnServersFound) {
             this.csvnServersFound.add(runningServer);
-            Log.d(TAG, "Refreshing view after server found running: " + 
-                    this.csvnServersFound.size());
+            Log.d(TAG, "Refreshing view after server found running: " + this.csvnServersFound.size());
             this.broadcastServerStartedMessage(runningServer);
         }
     }
@@ -121,7 +127,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements
     public void csvnServerStopped(SvnEdgeServerInfo stoppedServer) {
         Log.d(TAG, "Server Stopped: " + stoppedServer);
 
-        //TODO: verify if the server is in the cache before.
+        // TODO: verify if the server is in the cache before.
         SvnEdgeServerInfo removed = null;
         synchronized (this.csvnServersFound) {
             if (this.csvnServersFound.size() == 1) {
@@ -129,8 +135,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements
             } else {
                 ArrayList<SvnEdgeServerInfo> updatedList = new ArrayList<SvnEdgeServerInfo>();
                 for (SvnEdgeServerInfo existingServer : this.csvnServersFound) {
-                    if (!existingServer.getServiceName().equals(
-                            stoppedServer.getServiceName())) {
+                    if (!existingServer.getServiceName().equals(stoppedServer.getServiceName())) {
                         updatedList.add(existingServer);
                     } else {
                         removed = existingServer;
@@ -139,6 +144,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements
                 this.csvnServersFound = updatedList;
             }
             this.broadcastServerShutdownMessage(removed);
+
         }
     }
 
@@ -150,8 +156,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements
         bundle.putString("index", foundServer.getServiceName());
         bundle.putString("url", foundServer.getUrl().toString());
         bundle.putString("hostAddress", foundServer.getHostAddress());
-        boolean converted = foundServer.getPropertyValue(
-                SvnEdgeCsvnServiceKey.TEAMFORGE_PATH).equals("");
+        boolean converted = foundServer.getPropertyValue(SvnEdgeCsvnServiceKey.TEAMFORGE_PATH).equals("");
         bundle.putBoolean("converted", converted);
 
         msg.setData(bundle);
@@ -168,9 +173,32 @@ public class SvnEdgeDiscoveryApplication extends Application implements
         DiscoverActivity.currentInstance.viewUpdateHandler.sendMessage(msg);
     }
 
+    private void sendServerEventNotification(int eventMessage, SvnEdgeServerInfo serverInfo) {
+        switch (eventMessage) {
+        case MESSAGE_SERVER_IS_RUNNING:
+            this.mainIntent = PendingIntent.getActivity(this, 0, new Intent(this, DiscoverActivity.class), 0);
+            this.notification = new Notification(R.drawable.discovery_api, "SVNEdge Server Running",
+                    System.currentTimeMillis());
+            this.notification.flags = Notification.FLAG_AUTO_CANCEL;
+            this.notification.setLatestEventInfo(this, "Server '" + serverInfo.getHostAddress() + "'",
+                    "Found SvnEdge server is at '" + serverInfo.getHostAddress() + "'", this.mainIntent);
+
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            if (prefs.getBoolean("prefVibrateOnServerStarted", true)) {
+                this.notification.vibrate = new long[] { 0, 100 };
+            }
+
+            break;
+
+        default:
+            break;
+        }
+
+        this.notificationManager.notify(-1, this.notification);
+    }
+
     /**
-     * Initializes the Wifi connectivity if necessary. It takes the user to the
-     * Wifi setup intent.
+     * Initializes the Wifi connectivity if necessary. It takes the user to the Wifi setup intent.
      */
     public void initWifiNetworkConnectivity() {
         Log.d(TAG, "Trying to get the Wifi Manager: ");
@@ -178,21 +206,19 @@ public class SvnEdgeDiscoveryApplication extends Application implements
         if (wifiMan.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
             Log.d(TAG, "The WIFI state is different: " + wifiMan.getWifiState());
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("There is no WIFI connected. Would you like to configure one?")
-                   .setCancelable(false)
-                   .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                       public void onClick(DialogInterface dialog, int id) {
-                           Intent wirelessSettingsIntent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                           startActivity(wirelessSettingsIntent);
-                       }
-                   })
-                   .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                       public void onClick(DialogInterface dialog, int id) {
+            builder.setMessage("There is no WIFI connected. Would you like to configure one?").setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent wirelessSettingsIntent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                            startActivity(wirelessSettingsIntent);
+                        }
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
-                       }
-                   });
-            AlertDialog alert = builder.create();
-            alert.show();
+                        }
+                    });
+             AlertDialog alert = builder.create();
+             alert.show();
 
         } else {
             WifiInfo wifiinfo = wifiMan.getConnectionInfo();
@@ -204,11 +230,8 @@ public class SvnEdgeDiscoveryApplication extends Application implements
      * @return the InetAddress instance from the Wifi connectivity.
      */
     private InetAddress getIpAddressFromWifi() {
-        byte[] byteaddr =
-                new byte[] { (byte) (this.ipAddress & 0xff),
-                        (byte) (this.ipAddress >> 8 & 0xff),
-                        (byte) (this.ipAddress >> 16 & 0xff),
-                        (byte) (this.ipAddress >> 24 & 0xff) };
+        byte[] byteaddr = new byte[] { (byte) (this.ipAddress & 0xff), (byte) (this.ipAddress >> 8 & 0xff),
+                (byte) (this.ipAddress >> 16 & 0xff), (byte) (this.ipAddress >> 24 & 0xff) };
         try {
             InetAddress convertedAddress = InetAddress.getByAddress(byteaddr);
             return convertedAddress;
@@ -244,19 +267,20 @@ public class SvnEdgeDiscoveryApplication extends Application implements
      */
     private void showStartNotification() {
         this.notification.flags = Notification.FLAG_ONGOING_EVENT;
-        this.notification.setLatestEventInfo(this, "CollabNet SVNEdge Discovery", 
-                "The discovery client is running...", this.mainIntent);
+        this.notification.setLatestEventInfo(this, "CollabNet SVNEdge Discovery", "The discovery client is running...",
+                this.mainIntent);
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (prefs.getBoolean("prefVibrateOnStartDiscovery", true)) {
-            this.notification.vibrate = new long[] {100, 200, 100, 200};
+            this.notification.vibrate = new long[] { 100, 200, 100, 200 };
         }
         this.notificationManager.notify(-1, this.notification);
     }
 
     /**
      * Starts the discovery API for a given listener.
-     * @param listener is the listener interested in the events about 
-     * Subversion Edge servers.
+     * 
+     * @param listener
+     *            is the listener interested in the events about Subversion Edge servers.
      */
     public void startDiscovery() {
         try {
@@ -284,7 +308,13 @@ public class SvnEdgeDiscoveryApplication extends Application implements
         // remove all the notifications in the status bar.
         this.notificationManager.cancelAll();
         // stop the discovery client
-        this.csvnClient.stop();
+        try {
+            this.csvnClient.stop();
+
+        } catch (IOException e) {
+            Log.e(TAG, "Error closing the jnDNS client: ", e);
+            e.printStackTrace();
+        }
         // release the multicast lock in the kernel.
         this.multicastLock.release();
     }
