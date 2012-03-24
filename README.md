@@ -1,11 +1,11 @@
-README
+WHAT IS THIS?
 ==========
 
 This project was initially written for Android Target-7 (Version 2.1). It may be
 already obsolete. However, it has a more updated version of the presentation
 at http://www.youtube.com/watch?v=-hzKXAnNWRE.
 
-WHAT IS IT?
+IN A NUTSHELL
 ===========
 
 * It is an Android application to find Subversion Edge servers in a local network.
