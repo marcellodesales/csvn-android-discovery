@@ -1,49 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	
-    <TableLayout android:id="@+id/TableLayout01"
-        android:layout_height="wrap_content" android:layout_width="fill_parent">
-        <TableRow android:id="@+id/TableRow01" android:layout_height="wrap_content"
-            android:layout_width="fill_parent">
-		    <ImageView android:id="@+id/discovery_api"
-	           android:layout_width="wrap_content"
-	           android:layout_height="fill_parent"
-	           android:layout_marginRight="6dip"
-               android:paddingRight="20sp"
-	           android:paddingLeft="20sp" android:src="@drawable/discovery_api"/>
-            <TextView android:layout_height="wrap_content" android:text="@string/title"
-                android:textSize="24sp" android:padding="20dp" android:gravity="center" android:layout_width="wrap_content"/>
-        </TableRow>
-    </TableLayout>
+   android:orientation="vertical" android:layout_width="fill_parent"
+   android:layout_height="fill_parent">
 
-	<TableLayout android:id="@+id/TableLayout01"
-		android:layout_height="wrap_content" android:layout_width="fill_parent">
-		<TableRow android:id="@+id/TableRow01" android:layout_height="wrap_content"
-			android:layout_width="fill_parent">
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/labelCurrentIp"
-				android:text="IP Address"></TextView>
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:id="@+id/textCurrentIp"
-				android:text="127.0.0.1" android:paddingLeft="5sp"
-				android:paddingRight="10sp" android:layout_weight="1"></TextView>
-			
-		</TableRow>
-	</TableLayout>
+   <TableLayout android:id="@+id/TableLayout01"
+      android:layout_height="wrap_content" android:layout_width="fill_parent">
+      <TableRow android:id="@+id/TableRow01"
+         android:layout_height="wrap_content" android:layout_width="fill_parent">
+         <ImageView android:id="@+id/discovery_api"
+            android:layout_width="wrap_content" android:layout_height="fill_parent"
+            android:layout_marginRight="6dip" android:paddingRight="20sp"
+            android:paddingLeft="20sp" android:src="@drawable/discovery_api" />
+         <TextView android:layout_height="wrap_content"
+            android:text="@string/title" android:textSize="24sp"
+            android:padding="20dp" android:gravity="center"
+            android:layout_width="wrap_content" />
+      </TableRow>
+   </TableLayout>
 
-	<ListView android:layout_width="fill_parent"
-		android:fadeScrollbars="true" android:id="@+id/listViewServersFound"
-		android:layout_height="fill_parent" android:longClickable="true"
-		android:focusableInTouchMode="true" android:focusable="true"
-		android:headerDividersEnabled="true" android:footerDividersEnabled="true"
-		android:choiceMode="singleChoice" android:padding="10px"></ListView>
-		
-	<TextView
-	    android:id="@+id/android:empty"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:text="@string/main_no_items"/>
+   <TableLayout android:id="@+id/TableLayout01"
+      android:layout_height="wrap_content" android:layout_width="fill_parent">
+      <TableRow android:id="@+id/TableRow01"
+         android:layout_height="wrap_content" android:layout_width="fill_parent">
+         <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/labelCurrentIp"
+            android:text="IP Address"></TextView>
+         <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/textCurrentIp"
+            android:text="127.0.0.1" android:paddingLeft="5sp"
+            android:paddingRight="10sp" android:layout_weight="1"></TextView>
+
+      </TableRow>
+   </TableLayout>
+
+   <ListView android:layout_width="fill_parent"
+      android:fadeScrollbars="true" android:id="@+id/listViewServersFound"
+      android:layout_height="fill_parent" android:longClickable="true"
+      android:focusableInTouchMode="true" android:focusable="true"
+      android:headerDividersEnabled="true"
+      android:footerDividersEnabled="true" android:choiceMode="singleChoice"
+      android:padding="10px"></ListView>
+
+   <TextView android:id="@+id/android:empty"
+      android:layout_width="fill_parent" android:layout_height="fill_parent"
+      android:text="@string/main_no_items" />
 
 </LinearLayout>

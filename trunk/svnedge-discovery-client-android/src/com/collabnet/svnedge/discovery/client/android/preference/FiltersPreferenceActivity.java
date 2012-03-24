@@ -1,11 +1,16 @@
 package com.collabnet.svnedge.discovery.client.android.preference;
 
-import com.collabnet.svnedge.discovery.client.android.R;
-import com.collabnet.svnedge.discovery.client.android.R.xml;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
+import com.collabnet.svnedge.discovery.client.android.R;
+
+/**
+ * The filters preference activity loaded from the xml configuration.
+ * 
+ * @author Marcello de Sales (marcello.desales@gmail.com)
+ * 
+ */
 public class FiltersPreferenceActivity extends PreferenceActivity {
 
     @Override

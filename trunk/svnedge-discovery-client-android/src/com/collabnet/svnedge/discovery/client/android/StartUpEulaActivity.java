@@ -1,20 +1,3 @@
-/*
-	Copyright (C) 2008 Jeffrey Sharkey, http://jsharkey.org/
-	
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.collabnet.svnedge.discovery.client.android;
 
 import com.collabnet.svnedge.discovery.client.android.discover.DiscoverActivity;
@@ -33,20 +16,23 @@ import android.widget.Button;
 import android.widget.ViewFlipper;
 
 /**
- * Show a series of wizard-like steps to the user, which might include an EULA,
- * program credits, and helpful hints.
+ * Show a series of wizard-like steps to the user, which might include an EULA, program credits, and helpful hints.
  * 
- * @author Marcello de Sales(mdesales@collab.net)
+ * @author Marcello de Sales (marcello.desales@gmail.com)
  */
 public class StartUpEulaActivity extends Activity {
 
     /**
-     * In-order list of wizard steps to present to user. These are layout
-     * resource ids.
+     * In-order list of wizard steps to present to user. These are layout resource ids.
      */
     public final static int[] STEPS = new int[] { R.layout.wiz_eula };
-
+    /**
+     * The view flipper
+     */
     protected ViewFlipper flipper = null;
+    /**
+     * The buttons
+     */
     protected Button next, prev;
 
     private void closeWizardOpenMainActivity() {
@@ -71,9 +57,7 @@ public class StartUpEulaActivity extends Activity {
         this.flipper = (ViewFlipper) this.findViewById(R.id.wizard_flipper);
 
         // inflate the layouts for each step
-        LayoutInflater inflater =
-                (LayoutInflater) this
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         for (int layout : STEPS) {
             View step = inflater.inflate(layout, this.flipper, false);
             this.flipper.addView(step);
@@ -86,10 +70,10 @@ public class StartUpEulaActivity extends Activity {
                     // user walked past end of wizard, so return okay
                     closeWizardOpenMainActivity();
 
-//                    final CheckBox checkBox = (CheckBox) findViewById(R.id.showeula);
-//                    SharedPreferences.Editor editor = prefs.edit();
-//                    editor.putBoolean("prefCheckBoxShowEula", checkBox.isChecked());
-//                    editor.commit();
+                    // final CheckBox checkBox = (CheckBox) findViewById(R.id.showeula);
+                    // SharedPreferences.Editor editor = prefs.edit();
+                    // editor.putBoolean("prefCheckBoxShowEula", checkBox.isChecked());
+                    // editor.commit();
 
                 } else {
                     // show next step and update buttons
@@ -120,14 +104,23 @@ public class StartUpEulaActivity extends Activity {
         this.updateButtons();
     }
 
+    /**
+     * @return if the first button is being displayed.
+     */
     protected boolean isFirstDisplayed() {
         return (flipper.getDisplayedChild() == 0);
     }
 
+    /**
+     * @return if the last button is displayed.
+     */
     protected boolean isLastDisplayed() {
         return (flipper.getDisplayedChild() == flipper.getChildCount() - 1);
     }
 
+    /**
+     * Show the buttons upon user's action.
+     */
     protected void updateButtons() {
         boolean eula = (flipper.getDisplayedChild() == 0);
 

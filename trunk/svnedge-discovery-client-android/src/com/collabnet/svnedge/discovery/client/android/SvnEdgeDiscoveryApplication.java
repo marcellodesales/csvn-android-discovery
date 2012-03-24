@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Application;
@@ -33,12 +34,14 @@ import com.collabnet.svnedge.discovery.mdns.SvnEdgeServiceType;
 /**
  * This is the main application implementation.
  * 
- * @author Marcello de Sales (mdesales@collab.net)
+ * @author Marcello de Sales (marcello.desales@gmail.com)
  * 
  */
 public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeServersListener {
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created. 
+     **/
     public static final String TAG = "SvnEdgeDiscovery";
     /**
      * The message code to signal when an SvnEdge server is found running.
@@ -51,7 +54,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeS
     /**
      * The list of csvn servers received.
      */
-    private ArrayList<SvnEdgeServerInfo> csvnServersFound;
+    private List<SvnEdgeServerInfo> csvnServersFound;
     /**
      * The instance of the csvn discovery client.
      */
@@ -90,7 +93,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeS
     /**
      * @return the current list of servers found by the discovery API.
      */
-    public synchronized ArrayList<SvnEdgeServerInfo> getFoundServers() {
+    public synchronized List<SvnEdgeServerInfo> getFoundServers() {
         return this.csvnServersFound;
     }
 
@@ -133,7 +136,7 @@ public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeS
             if (this.csvnServersFound.size() == 1) {
                 removed = this.csvnServersFound.remove(0);
             } else {
-                ArrayList<SvnEdgeServerInfo> updatedList = new ArrayList<SvnEdgeServerInfo>();
+                List<SvnEdgeServerInfo> updatedList = new ArrayList<SvnEdgeServerInfo>();
                 for (SvnEdgeServerInfo existingServer : this.csvnServersFound) {
                     if (!existingServer.getServiceName().equals(stoppedServer.getServiceName())) {
                         updatedList.add(existingServer);
@@ -148,6 +151,10 @@ public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeS
         }
     }
 
+    /**
+     * Broadcasts an Android message upon the discovery of a new server running (or captured from the mDNS as running).
+     * @param foundServer is the information about the svnedge server found.
+     */
     private void broadcastServerStartedMessage(SvnEdgeServerInfo foundServer) {
         Message msg = Message.obtain();
         msg.what = MESSAGE_SERVER_IS_RUNNING;
@@ -163,6 +170,10 @@ public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeS
         DiscoverActivity.currentInstance.viewUpdateHandler.sendMessage(msg);
     }
 
+    /**
+     * Broadcasts an Android message upon the discovery of a running server being stopped (captured from the mDNS).
+     * @param serverStopped is the information about the svnedge server that stopped running.
+     */
     private void broadcastServerShutdownMessage(SvnEdgeServerInfo serverStopped) {
         Message msg = Message.obtain();
         msg.what = MESSAGE_SERVER_STOPPED;
@@ -173,6 +184,13 @@ public class SvnEdgeDiscoveryApplication extends Application implements SvnEdgeS
         DiscoverActivity.currentInstance.viewUpdateHandler.sendMessage(msg);
     }
 
+    /**
+     * Updates the different intent with the discovery activity.
+     * @param eventMessage is the event sent.
+     * @param serverInfo is the svnedge server information.
+     * 
+     * ATTENTION: SEE THE HANDLER IMPLEMENTATION. DiscoveryActivity.viewUpdateHandler
+     */
     private void sendServerEventNotification(int eventMessage, SvnEdgeServerInfo serverInfo) {
         switch (eventMessage) {
         case MESSAGE_SERVER_IS_RUNNING:

@@ -1,6 +1,6 @@
 package com.collabnet.svnedge.discovery.client.android.discover;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,6 +27,12 @@ import com.collabnet.svnedge.discovery.client.android.preference.FiltersPreferen
 import com.collabnet.svnedge.discovery.client.android.preference.SettingsPreferenceActivity;
 import com.collabnet.svnedge.discovery.mdns.SvnEdgeServiceType;
 
+/**
+ * The discover activity.
+ * 
+ * @author Marcello de Sales (marcello.desales@gmail.com)
+ * 
+ */
 public class DiscoverActivity extends Activity {
 
     /**
@@ -53,7 +59,9 @@ public class DiscoverActivity extends Activity {
      * The switch to start/stop the discovery.
      */
     private boolean started;
-    
+    /**
+     * Current activity being displayed.
+     */
     public static DiscoverActivity currentInstance;
 
     @Override
@@ -62,34 +70,32 @@ public class DiscoverActivity extends Activity {
 
         currentInstance = this;
 
-        this.app = ((SvnEdgeDiscoveryApplication)getApplicationContext());
+        this.app = ((SvnEdgeDiscoveryApplication) getApplicationContext());
 
-        ArrayList<SvnEdgeServerInfo> foundServers = (ArrayList<SvnEdgeServerInfo>)getLastNonConfigurationInstance();
-        foundServers = foundServers != null ? foundServers: this.app.getFoundServers();
+        List<SvnEdgeServerInfo> foundServers = (List<SvnEdgeServerInfo>) getLastNonConfigurationInstance();
+        foundServers = foundServers != null ? foundServers : this.app.getFoundServers();
 
         setContentView(R.layout.discovery);
 
         this.app.initWifiNetworkConnectivity();
         this.initUiComponents(foundServers);
 
-        this.csvnServersFoundAdapter =
-                new SvnEdgeServerInfoListAdapter(this, R.layout.row_svn_mode_standalone,
-                        foundServers, this);
+        this.csvnServersFoundAdapter = new SvnEdgeServerInfoListAdapter(this, R.layout.row_svn_mode_standalone,
+                foundServers, this);
 
-        ListView svnEdgeServersList =
-                (ListView) this.findViewById(R.id.listViewServersFound);
+        ListView svnEdgeServersList = (ListView) this.findViewById(R.id.listViewServersFound);
         svnEdgeServersList.setAdapter(this.csvnServersFoundAdapter);
 
         Log.d(TAG, "Finished loading... ");
     }
 
     /**
-     * Initializes the UI components onCreate() execution, with the given 
-     * list of servers. 
-     * @param foundServers is the initial number of servers found. This is the
-     * case of when the device changes perspective.
+     * Initializes the UI components onCreate() execution, with the given list of servers.
+     * 
+     * @param foundServers is the initial number of servers found. This is the case of when the device changes
+     * perspective.
      */
-    private void initUiComponents(ArrayList<SvnEdgeServerInfo> foundServers) {
+    private void initUiComponents(List<SvnEdgeServerInfo> foundServers) {
         Log.d(TAG, "Initializing the components...");
         this.currentIp = (TextView) this.findViewById(R.id.textCurrentIp);
 
@@ -105,14 +111,14 @@ public class DiscoverActivity extends Activity {
         }
 
         ListView svnEdgeServersList = (ListView) this.findViewById(R.id.listViewServersFound);
-        svnEdgeServersList.setOnItemLongClickListener(new SvnEdgeServersListLongClickListener(
-                        this, foundServers));
+        svnEdgeServersList.setOnItemLongClickListener(new SvnEdgeServersListLongClickListener(this, foundServers));
 
         Log.d(TAG, "Getting services");
     }
 
     /**
-     * Shows an alert message with 
+     * Shows an alert message with
+     * 
      * @param text is the text to be displayed.
      */
     private void showLongToastMessage(CharSequence text) {
@@ -123,13 +129,13 @@ public class DiscoverActivity extends Activity {
 
     /**
      * Cleans the list of found servers, showing the given message.
+     * 
      * @param actionMessage
      */
     private void clearSvnEdgeServersList() {
-        ListView svnEdgeServersList =
-            (ListView) this.findViewById(R.id.listViewServersFound);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
-                this, android.R.layout.simple_list_item_1, new String[] {});
+        ListView svnEdgeServersList = (ListView) this.findViewById(R.id.listViewServersFound);
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1,
+                new String[] {});
         svnEdgeServersList.setAdapter(adapter);
     }
 
@@ -139,44 +145,43 @@ public class DiscoverActivity extends Activity {
     private Runnable returnRes = new Runnable() {
         @Override
         public void run() {
-            Log.d(TAG, "Running the updater of the adapter 'returnRes'" + 
-                    app.getFoundServers().size());
+            Log.d(TAG, "Running the updater of the adapter 'returnRes'" + app.getFoundServers().size());
             csvnServersFoundAdapter.notifyDataSetChanged();
         }
     };
 
+    /**
+     * The main message handler that updates the activities. 
+     */
     public Handler viewUpdateHandler = new Handler() {
 
         public void handleMessage(final Message msg) {
 
-            switch(msg.what) {
+            switch (msg.what) {
             case SvnEdgeDiscoveryApplication.MESSAGE_SERVER_IS_RUNNING:
 
                 Log.d(TAG, "Found server running. ");
                 runOnUiThread(returnRes);
                 break;
 
-            case SvnEdgeDiscoveryApplication.MESSAGE_SERVER_STOPPED :
+            case SvnEdgeDiscoveryApplication.MESSAGE_SERVER_STOPPED:
 
                 if (app.getFoundServers().size() == 0) {
 
                     Runnable r = new Runnable() {
-                            @Override
-                            public void run() {
-                                clearSvnEdgeServersList();
-                            }
-                        };
-                        runOnUiThread(r);
+                        @Override
+                        public void run() {
+                            clearSvnEdgeServersList();
+                        }
+                    };
+                    runOnUiThread(r);
 
                 } else {
-                    Log.d(TAG, "Refreshing view after server stopped: " + 
-                            app.getFoundServers().size());
+                    Log.d(TAG, "Refreshing view after server stopped: " + app.getFoundServers().size());
                     runOnUiThread(returnRes);
                 }
 
-                showLongToastMessage("The server '" + 
-                        msg.getData().getString("hostAddress") + 
-                        "' has been turned off.");
+                showLongToastMessage("The server '" + msg.getData().getString("hostAddress") + "' has been turned off.");
                 break;
             }
         }
@@ -203,8 +208,7 @@ public class DiscoverActivity extends Activity {
             // clicked on start the service
             if (!this.started) {
                 Log.d(TAG, "Selected Service Type: " + SvnEdgeServiceType.CSVN);
-                this.initialSearchDialog = ProgressDialog.show(this, "",
-                        "Starting discovery service", true);
+                this.initialSearchDialog = ProgressDialog.show(this, "", "Starting discovery service", true);
 
                 this.app.startDiscovery();
 
@@ -248,8 +252,7 @@ public class DiscoverActivity extends Activity {
             Log.d(TAG, "Opening the about screen");
             CharSequence text = "This option hasn't been implemented...";
             int duration = Toast.LENGTH_LONG;
-            Toast toast =
-                    Toast.makeText(getApplicationContext(), text, duration);
+            Toast toast = Toast.makeText(getApplicationContext(), text, duration);
             toast.show();
             break;
 
@@ -257,18 +260,16 @@ public class DiscoverActivity extends Activity {
             Log.d(TAG, "Opening the closing option");
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Are you sure you want to close the CollabNet SvnEdge Discovery client?")
-                   .setCancelable(false)
-                   .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                       public void onClick(DialogInterface dialog, int id) {
+                    .setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             DiscoverActivity.this.finish();
                             DiscoverActivity.this.app.stopDiscovery();
-                       }
-                   })
-                   .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                       public void onClick(DialogInterface dialog, int id) {
+                        }
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
-                       }
-                   });
+                        }
+                    });
             AlertDialog alert = builder.create();
             alert.show();
             break;

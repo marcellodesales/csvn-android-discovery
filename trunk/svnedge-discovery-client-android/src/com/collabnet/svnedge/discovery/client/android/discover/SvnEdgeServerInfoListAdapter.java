@@ -2,7 +2,7 @@ package com.collabnet.svnedge.discovery.client.android.discover;
 
 import static com.collabnet.svnedge.discovery.client.android.discover.DiscoverActivity.TAG;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,15 +17,35 @@ import com.collabnet.svnedge.discovery.SvnEdgeServerInfo;
 import com.collabnet.svnedge.discovery.client.android.R;
 import com.collabnet.svnedge.discovery.mdns.SvnEdgeCsvnServiceKey;
 
+/**
+ * The adapter that displays the list of Subversion Edge servers.
+ * 
+ * @author Marcello de Sales (marcello.desales@gmail.com)
+ * 
+ */
 public class SvnEdgeServerInfoListAdapter extends ArrayAdapter<SvnEdgeServerInfo> {
 
+    /**
+     * The main activity.
+     */
     private Activity mainActivity;
-    private ArrayList<SvnEdgeServerInfo> serversFound;
+    /**
+     * The list of servers found.
+     */
+    private List<SvnEdgeServerInfo> serversFound;
 
-    public SvnEdgeServerInfoListAdapter(Context context,
-            int textViewResourceId, ArrayList<SvnEdgeServerInfo> items, Activity parent) {
+    /**
+     * Creates a new adapter with the given parameters for the UI.
+     * 
+     * @param context the context.
+     * @param textViewResourceId the resource UI for the view.
+     * @param items the list of current servers found.
+     * @param parent
+     */
+    public SvnEdgeServerInfoListAdapter(Context context, int textViewResourceId, List<SvnEdgeServerInfo> items,
+            Activity parent) {
         super(context, textViewResourceId, items);
-        Log.d(TAG, "Initializing the adapter with " + items.size() + " servers") ;
+        Log.d(TAG, "Initializing the adapter with " + items.size() + " servers");
         this.serversFound = items;
         this.mainActivity = parent;
     }
@@ -33,13 +53,13 @@ public class SvnEdgeServerInfoListAdapter extends ArrayAdapter<SvnEdgeServerInfo
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
-        Log.d(TAG, "Updating UI for server at position " + position) ;
+        Log.d(TAG, "Updating UI for server at position " + position);
         SvnEdgeServerInfo serverInfo = this.serversFound.get(position);
-        Log.d(TAG, "Putting in the UI: " + serverInfo) ;
+        Log.d(TAG, "Putting in the UI: " + serverInfo);
         if (v == null) {
-            LayoutInflater vi = (LayoutInflater)this.mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            int rowId = serverInfo.getPropertyValue(SvnEdgeCsvnServiceKey.TEAMFORGE_PATH).equals("") ?
-                        R.layout.row_svn_mode_teamforge : R.layout.row_svn_mode_standalone;
+            LayoutInflater vi = (LayoutInflater) this.mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            boolean svnServerConverted = serverInfo.getPropertyValue(SvnEdgeCsvnServiceKey.TEAMFORGE_PATH).equals("");
+            int rowId = svnServerConverted ? R.layout.row_svn_mode_teamforge : R.layout.row_svn_mode_standalone;
             v = vi.inflate(rowId, null);
         }
         if (serverInfo != null) {

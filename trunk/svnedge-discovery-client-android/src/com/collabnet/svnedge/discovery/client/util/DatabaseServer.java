@@ -6,6 +6,14 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * The main Database Server to cache the list of servers found.
+ * 
+ * TODO: Still need to be fully implemented.
+ * 
+ * @author Marcello de Sales (marcello.desales@gmail.com)
+ * 
+ */
 public class DatabaseServer extends SQLiteOpenHelper {
 
     private static final String TAG = "SVNEDGE_DB";
